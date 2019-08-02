@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Anonymous Message Board | Board</title>
+    <meta name="description" content="A Message Board made for Free Code Camp">
+    <link id="favicon" rel="icon" href="https://hyperdev.com/favicon-app.ico" type="image/x-icon">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="/public/style.css">
+    <!-- bootstrap config-->
+    <link rel="stylesheet" 
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" 
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" 
+          crossorigin="anonymous">
+  </head>
+  <body class="d-flex flex-column">
+    <header class="nav">
+      <a class="nav-link" href="https://octagonal-molecule.glitch.me/#" id="home">Home</a>
+    </header>
+    <!-- container that makes footer work w/ css-->
+    <div class="container" id="page-content">
+      <!-- title content added via ajax -->
+      <h1 id="boardTitle"></h1>
+      
+      <!-- parent container for submit new thread functionality -->
+      <div id="submit-new-thread" class="card text-center border-dark">
+        <div class="card-body">
+          <h3 class="card-title">Start a new conversation:</h3>
+          <div class="form-group">
+            <form id="newThread" method="post" action="/api/">
+              <textarea class="form-control" type="text" placeholder="Thread text..." name="text" required=""></textarea>
+              <input class="form-control" type="text" placeholder="password to delete" name="delete_password" required="">
+              <input id="new-convo-btn" type="submit" value="Submit" class="btn btn-success mx-auto">
+            </form>
+          </div>
+        </div>
+      </div>
+      <hr>
+      <!-- page section to display thread list, populated via ajax -->
+      <div id="boardDisplay"></div>
+    </div>
+    <footer class="footer">
+      <div class="container text-center">
+        Created by <span class="important-text">Robby East</span> as part of <span class="important-text">Free Code Camp</span> project provided <a href="https://learn.freecodecamp.org/information-security-and-quality-assurance/information-security-and-quality-assurance-projects/anonymous-message-board">here</a>
+      </div>
+    </footer>
+  </body>
+  <!-- Your web-app is https, so your scripts need to be too -->
+  <!-- bootstrap config-->
+  <!-- Optional JavaScript -->
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-2.2.1.min.js"
+            integrity="sha256-gvQgAFzTH6trSrAWoH1iPo9Xc96QxSZ3feW6kem+O00="
+            crossorigin="anonymous">
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" 
+          integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" 
+          crossorigin="anonymous">
+  </script>
+<script>
+      // ajax functions to populate dynamic UI elements 
+      $(function() {
+        // get the board title from the url and update the page
+        var currentBoard = window.location.pathname.slice(3);
+        $('#boardTitle').text('Welcome to the message board for '+currentBoard.toUpperCase())
+        // get url to send with ajax call
+        var url = "/api/threads/"+currentBoard;
+        $.ajax({
+          type: "GET",
+          url: url,
+          success: function(data)
+          {
+            // array to hold all html once they are all constructed
+            var boardThreads= [];
+            data.forEach(function(ele) {
+              
+              // put all dynamic html content in an array to hold each threads content
+              var thread = [];
+              
+              /* --- THREAD ELEMENT CONSTRUCTION --- */
+              
+              // thread top-level container | start
+              thread.push('<div id="thread-container" class="card border-dark">')
+              
+              // thread header w/ dynamic id and date
+              thread.push(`<p id="thread-header" class="id card-header text-muted">Thread ID: ${ele._id} (${ele.created_on})</p>`);
+
+              // thread options container | start
+              thread.push('<div id="thread-options" class="d-flex flex-column list-group list-group-flush">')
+
+              // thread body text w/ dynamic string
+              thread.push(`
+                <div id="thread-body-container" class="form-group d-flex flex-column list-group-item text-center">
+                  <h3 id="thread-body-header"><mark>Thread Topic:</mark></h3>
+                  <p id="thread-body-text"class="text-left">${ele.text}</p>  
+                </div>
+              `);
+              
+              // thread report option, sends dynamic ele_id to api (changing form id breaks api)
+              thread.push(`
+                <form id="reportThread">
+                  <div class="form-group d-flex flex-column list-group-item text-center"">
+                    <input type="hidden" name="report_id" value="${ele._id}">
+                    <input class="btn btn-danger mx-auto" type="submit" value="Report"> 
+                  </div>
+                </form>
+              `);
+              
+              // thread delete option, sends dynamic ele_id to api (changing form id breaks api)
+              thread.push(`
+                <form id="deleteThread">
+                  <div class="form-group list-group-item d-flex flex-column text-center">
+                    <input type="hidden" value="${ele._id}" name="thread_id" required="">
+                    <input class="form-control" type="text" placeholder="password" name="delete_password" required="">
+                    <input class="btn btn-danger mx-auto" type="submit" value="Delete">
+                  </div>
+                </form>
+              `);
+              
+              // thread options container | end
+              thread.push('</div>');
+              
+              /* --- 'ADD REPLY' ELEMENT CONSTRUCTION --- */
+              
+              // add reply container | start
+              thread.push('<div id="add-reply-card" class="card border-dark">')
+              
+              // add reply header
+              thread.push(`<p id="add-reply-header" class="card-header"> Add a Reply: </p>`)
+              
+              // add reply body, sends ele_id and board_id to api
+              thread.push(`
+                <div id="add-reply-options" class="d-flex flex-column list-group list-group-flush text-center">
+                  <form class="form-group" action="/api/replies/${currentBoard}" method="post" id="newReply">
+                    <input type="hidden" name="thread_id" value="${ele._id}">
+                    <textarea class="form-control form-control-lg" type="text" placeholder="Quick reply..." name="text" required=""></textarea>
+                    <input class="form-control" type="text" placeholder="password to delete" name="delete_password" required="">
+                    <input class="btn btn-success mx-auto"type="submit" value="Submit">
+                  </form>
+                </div>
+              `)
+              
+              // add reply container | end
+              thread.push('</div>')
+
+              /* --- REPLIES LIST ELEMENT CONSTRUCTION --- */
+              
+              // replies list container | start
+              thread.push('<div id="replies-list-container" class="replies"">');
+              
+              // reply list section heading w/ thread link and dynamic counting
+              var hiddenCount = ele.replycount - 3;
+              if (hiddenCount < 1) { hiddenCount = 0 };
+              thread.push(`
+                <h4 id ="reply-list-title" class="centered-heading"> Replies List:</h4>
+                <h5 class="centered-heading"> ${ele.replycount} replies total (${hiddenCount} hidden) - 
+                  <a href="${window.location.pathname}/${ele._id}">See the full thread here</a>
+                </h5>
+              `)
+              
+              // construct list of reply cards
+              ele.replies.forEach(function(rep) {
+
+                // reply card container | start
+                thread.push('<div id="reply-card" class="card border-dark">')
+
+                // reply card header w/ dynamic id and date
+                thread.push(`<p class="id card-header text-muted">Reply ID: ${rep._id} (${rep.created_on})</p>`);
+
+                // reply card body w/ dynamic text
+                thread.push(`
+                  <div id="reply-body-container" class="d-flex flex-column list-group-item text-center">
+                    <p id="reply-body-header"><mark>Reply:</mark></p>       
+                    <p id="reply-body-text" class="text-left reply-body">${rep.text}</p>
+                  </div>
+                `)
+
+                // reply report option, sends dynamic ele_id to api (changing form id breaks api)
+                thread.push(`
+                  <form class="list-group-item" id="reportReply">
+                    <div class="form-group flex-column text-center">
+                      <input type="hidden" name="thread_id" value="${ele._id}">
+                      <input type="hidden" name="reply_id" value="${rep._id}">
+                      <input class="btn btn-danger mx-auto" type="submit" value="Report">
+                    </div>                
+                  </form>
+                `)
+
+                // reply delete option, sends dynamic ele_id to api (changing form id breaks api)
+                thread.push(`
+                  <form class="list-group-item" id="deleteReply">
+                    <div class="form-group flex-column text-center">
+                      <input type="hidden" value="${ele._id}" name="thread_id" required="">
+                      <input type="hidden" value="${rep._id}" name="reply_id" required="">
+                      <input class="form-control" type="text" placeholder="password" name="delete_password" required="">
+                      <input class="btn btn-danger mx-auto" type="submit" value="Delete">
+                    </div>                
+                  </form>
+                `)
+
+                // reply card container | end
+                thread.push('</div>');
+              });
+              
+              // replies list container | end
+              thread.push('</div>')
+
+              // replies list footer
+              thread.push(`<div class="card-footer"></div>`)
+              
+              // thread top-level container | end
+              thread.push('</div>')
+
+              // join all the html together and push it into the main array
+              boardThreads.push(thread.join(''));
+            });
+            
+            // add the html strings to the main html element that is outside the ajax script (changing element id breaks UI)
+            $('#boardDisplay').html(boardThreads.join(''));
+          }
+        });
+        
+        $('#newThread').submit(function(){
+          $(this).attr('action', "/api/threads/" + currentBoard);
+        });
+        
+        $('#boardDisplay').on('submit','#reportThread', function(e) {
+          var url = "/api/threads/"+currentBoard;
+          $.ajax({
+            type: "PUT",
+            url: url,
+            data: $(this).serialize(),
+            success: function(data) { alert(data) }
+          });
+          e.preventDefault();
+        });
+        $('#boardDisplay').on('submit','#reportReply', function(e) {
+          var url = "/api/replies/"+currentBoard;
+          $.ajax({
+            type: "PUT",
+            url: url,
+            data: $(this).serialize(),
+            success: function(data) { alert(data) }
+          });
+          e.preventDefault();
+        });
+        $('#boardDisplay').on('submit','#deleteThread', function(e) {
+          var url = "/api/threads/"+currentBoard;
+          $.ajax({
+            type: "DELETE",
+            url: url,
+            data: $(this).serialize(),
+            success: function(data) { alert(data); location.reload(); }
+          });
+          e.preventDefault();
+        });        
+        $('#boardDisplay').on('submit','#deleteReply', function(e) {
+          var url = "/api/replies/"+currentBoard;
+          $.ajax({
+            type: "DELETE",
+            url: url,
+            data: $(this).serialize(),
+            success: function(data) { alert(data); location.reload(); }
+          });
+          e.preventDefault();
+        });              
+      });
+   </script>
+</html>

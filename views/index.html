@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Anonymous Message Board | Home</title>
+    <meta name="description" content="A Message Board made for Free Code Camp">
+    <link id="favicon" rel="icon" href="https://hyperdev.com/favicon-app.ico" type="image/x-icon">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="./public/style.css">
+    <!-- bootstrap config-->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  </head>
+  <body class="d-flex flex-column">
+    <header class="nav">
+      <a class="nav-link" href="https://octagonal-molecule.glitch.me/#" id="home">Home</a>
+    </header>
+    <div class="container" id="page-content">
+      <div id="create-section" class="d-flex flex-column bd-highlight mb-3" >
+        <h1>Anonymous Message Board</h1>
+        <hr>
+      <h2 class="flex-fill">Start a New Discussion:</h2>
+      <div id="start-convo-container" class="input-group mb-3">
+        <input type="text" class="form-control" placeholder="Board Name" id="start-convo-field">
+        <div class="input-group-append">
+          <button class="btn btn-outline-secondary" type="button" id="start-convo-button" onclick="goToBoard()">Start Converstation</button>
+        </div>
+        </div>
+      </div>
+      <hr>
+      <h2>Current Conversations:</h2>  
+      <div id="playlist"></div>
+    </div>
+    <footer class="footer">
+    <div class="container text-center">
+      Created by <span class="important-text">Robby East</span> as part of <span class="important-text">Free Code Camp</span> project provided <a href="https://learn.freecodecamp.org/information-security-and-quality-assurance/information-security-and-quality-assurance-projects/anonymous-message-board">here</a>
+    </div>
+    </footer>
+  </body>
+  
+    <!-- Your web-app is https, so your scripts need to be too -->
+    <script src="https://code.jquery.com/jquery-2.2.1.min.js"
+            integrity="sha256-gvQgAFzTH6trSrAWoH1iPo9Xc96QxSZ3feW6kem+O00="
+            crossorigin="anonymous"></script>
+    <script>
+      $(function() {
+        $.ajax({
+          type: "GET",
+          url: "/api/boards",
+          data:{},
+          success: function(data)
+          {
+            /* starting html tags for lists */
+            var board_list = "<ul class='list-group d-flex'>";
+            var temp_list = "<ul class='list-group list-group-horizontal'>";
+            
+            /* table heading construction */
+              temp_list += `<li class="list-group-item flex-fill text-center">` + 'Board Name' + "</li>";
+              temp_list += `<li class="list-group-item flex-fill text-center">` + 'Total Threads' + "</li>";
+              temp_list += `<li class="list-group-item flex-fill text-center">` + 'Total Replies' + "</li>";
+              temp_list += `<li class="list-group-item flex-fill text-center">` + 'Go To Board' + "</li>";
+            
+            /* ending html tag for board list */
+            temp_list += "</ul>"
+              
+            /* ending html tag for board list */
+            board_list += temp_list
+            
+            /* reset the temp list to be used later */
+            temp_list = "<ul class='list-group list-group-horizontal'>";
+
+            /* loop through each item sent back from the get endpoint */
+            for (var i=0; i < data.length; i++) {
+              /* set row color based on even/odd value of index */
+              if (i % 2 == 0) {
+                var temp_color_class = "list-group-item-light"
+              } else {
+                var temp_color_class = "list-group-item-dark"
+              }
+              /* construnct url for view board buttons */
+              var shortBoard = '/b/' + data[i]['name']
+              
+              
+              /* board row construction */
+              temp_list += `<li class="list-group-item flex-fill ${temp_color_class} text-center">` + data[i]['name'] + "</li>";
+              temp_list += `<li class="list-group-item flex-fill ${temp_color_class} text-center">` + data[i]['threads'] + ' threads' + "</li>";
+              temp_list += `<li class="list-group-item flex-fill ${temp_color_class} text-center">` + data[i]['replies'] + "</li>";
+              temp_list += `<li class="list-group-item flex-fill ${temp_color_class} text-center">` + `<a class='board-button' href=${shortBoard}>View</a>` + "</li>";
+              
+              /* ending html tag for temp row */
+              temp_list += "</ul>"
+              
+              /* add the current board row to the parent list */
+              board_list += temp_list
+              
+              /* reset the temp list to be used later */
+              temp_list = "<ul class='list-group list-group-horizontal'>";
+            }
+            board_list += "</ul>";
+            $("#playlist").html(board_list);
+          }
+      });
+      });
+    </script>    
+    <!-- bootstrap config-->
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script>
+      /* helper function to send user to proper url when clicking on start convo button */
+      function goToBoard() {
+        var user_input = $( "#start-convo-field" ).val();
+        if (user_input.length == 0) {
+          location.reload();
+        } else {
+          let url = `https://octagonal-molecule.glitch.me/b/${user_input}`
+          window.location = url;  
+        }
+      }
+    </script>
+</html>

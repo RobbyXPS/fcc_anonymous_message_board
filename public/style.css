@@ -1,0 +1,176 @@
+html,
+body {
+  height: 100%;
+}
+
+* {
+  margin: 0px;
+  padding: 0px;
+}
+
+p, .row {
+  margin: 0 !important;
+}
+
+#page-content {
+  padding-top: 3vh;
+  flex: 1 0 auto;
+}
+
+.newReply {
+  margin: 10px 5px 10px 5px;
+}
+
+h1 {
+  padding: 10vh 2vh 2vh 2vh;
+  text-align: center;
+  color: green;
+  text-shadow:
+   -1px -1px 0 darkgreen,  
+    1px -1px 0 darkgreen,
+    -1px 1px 0 darkgreen,
+     1px 1px 0 darkgreen;
+}
+
+h2 {
+  padding: 2vh;
+}
+
+#start-convo-container {
+  padding-bottom: 2vh;
+}
+
+#start-convo-field {
+  padding: 1vh 1.5vh;
+  text-decoration: none;
+  text-transform: uppercase;
+  box-shadow: 0 5px 0 darkgray;
+}
+
+.nav {
+  background-color: green;
+  box-shadow: 0 5px 0 darkgreen;
+}
+
+#start-convo-button {
+  box-shadow: 0 5px 0 darkgreen;
+}
+
+#start-convo-button, #home {
+  background-color: green;
+  color: white;
+  text-transform: uppercase;
+}
+
+.board-button {
+  background-color: green;
+  box-shadow: 0 5px 0 darkgreen;
+  color: white;
+  padding: 1vh 1.5vh;
+  position: relative;
+  text-decoration: none;
+  text-transform: uppercase;
+  
+}
+
+.board-button:hover, #start-convo-button:hover, #home:hover {
+  color: orange;
+  text-decoration: none;
+}
+
+.board-button:active, #start-convo-button:active {
+  box-shadow: none;
+  top: 5px;
+}
+
+.footer {
+  flex-shrink: none;
+  text-align: center;
+  padding: 5vh;
+  width: 100%;
+  background-color: #f5f5f5;
+  line-height: normal;
+}
+
+#playlist {
+ margin-bottom: 10vh; 
+}
+
+.important-text {
+  color: green;
+  font-weight: bold;
+}
+
+.replies {
+  padding: 5vh 2vh;
+}
+
+.form-control {
+  margin-bottom: 2vh;
+}
+
+#new-convo-btn {
+  margin: 2vh 0vh 4vh 0vh;
+}
+
+.card-body {
+  padding-bottom: 0 !important;
+}
+
+.centered-heading {
+  text-align: center;
+}
+
+#newReply {
+  padding: 2vh;
+}
+
+h3>mark, p>mark {
+  background-color: #eafaee;
+  text-decoration: underline;
+  font-weight: 900;
+}
+
+.d-flex {
+  background-color: #eafaee;
+}
+
+.mx-auto {
+  width: 30vw;
+}
+
+#thread-container, #submit-new-thread{
+  margin: 5vh 5vh 5vh 5vh;
+}
+
+.id {
+  font-size: 10.5px;
+}
+
+/* thread options doesn't have correct seperators w/o this*/
+.form-group { 
+  margin-bottom: 0px !important;
+}
+
+/* override bootstrap margin for body text*/
+#thread-body-text, .reply-body {
+  margin: 20px !important;
+}
+
+#add-reply-card, #reply-card {
+  margin: 5vh;
+}
+
+#reply-list-title {
+  text-decoration: underline;
+}
+
+#threadTitleOne, #threadTitleTwo {
+  padding: 2vh;
+}
+
+ul {
+  list-style: none;
+  margin-bottom: 0px !important;
+  padding: none;
+}
