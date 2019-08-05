@@ -53,3 +53,11 @@
 #### Test
 
     - Basic API tests written with Chai testing framework.
+
+
+Notes:
+- .env file is not included in repo, need to add with below code.
+
+  DB=SECRETKEY_URI_DB
+  NODE_ENV=notest
+  
