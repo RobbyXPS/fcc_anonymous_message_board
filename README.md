@@ -19,8 +19,7 @@
 - https://pricey-hugger.glitch.me/
 
   <br>
-  <br>
-  <br>
+  ----------------------------------------------------------------------------------------
   <br>
 
 ### _Technology and how it was used_
@@ -40,17 +39,17 @@
 
     - CRUD endpoints to handle board/thread/reply data.
 
-#### Front-End features (HTML + AJAX + BOOTSTRAP)
+#### Front-End features (HTML + AJAX + Bootstrap)
 
     - Front-End > Back-End communication via AJAX requests for dynamic data generation.
     - Responsive design via HTML and mobile first Bootstrap library. 
 
-#### Database
+#### Database (Mongo + Mongoose)
 
     - MongoDB managed in the cloud via https://www.mongodb.com/cloud.
     - Mongoose ODM (Object Document Mapper) used to make DB interactions more graceful. 
 
-#### Test
+#### Test (Chai)
 
     - Basic API tests written with Chai testing framework.
     
